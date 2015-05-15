@@ -4,6 +4,9 @@
 #include "Shapes/Basis.h"
 #include "Shapes/MeshBuilder.h"
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>           // Output data structure
+#include <assimp/postprocess.h>     // Post processing flags
 #include <iostream>
 
 using namespace std;
@@ -25,7 +28,32 @@ TP01::TP01()
 
     basis = new Basis( 10.0 );
 
-        std::string inputfile = "../../Models/cube.obj";
+
+
+//    Assimp::Importer importer;
+
+//    // And have it read the given file with some example postprocessing
+//     // Usually - if speed is not the most important aspect for you - you'll
+//     // propably to request more postprocessing than we do in this example.
+//     const aiScene* scene = importer.ReadFile( "../../Models/Personnage3DAfterMirroring.blend",
+//           aiProcess_CalcTangentSpace       |
+//           aiProcess_Triangulate            |
+//           aiProcess_JoinIdenticalVertices  |
+//           aiProcess_SortByPType);
+
+//     // If the import failed, report it
+//     if( !scene)
+//     {
+//       cout << ( importer.GetErrorString()) << endl;
+//     }
+
+//     // Now we can access the file's contents.
+
+//    mesh = new MeshBuilder(scene);
+
+
+
+        std::string inputfile = "../../Models/Personnage3DAfterMirroring.obj";
         std::vector<tinyobj::shape_t> shapes;
         std::vector<tinyobj::material_t> materials;
 
@@ -78,7 +106,7 @@ void
 TP01::render()
 {
 	// Initialisation de la caméra
-	lookAt( 0, 5, 30, 0, 0, 0 );
+    lookAt( 0, 5, 50, 0, 0, 0 );
 
 
 	// Rendu des objets
@@ -95,7 +123,13 @@ TP01::render()
         rotate( angle1, 0, 1, 0 );
         rotate( angle2, 1, 0, 0 );
 
+        glPolygonMode(GL_FRONT, GL_LINE);
+        glPolygonMode(GL_BACK, GL_LINE);
+
         mesh->draw();
+
+        glPolygonMode(GL_FRONT, GL_FILL);
+        glPolygonMode(GL_BACK, GL_FILL);
     popMatrix();
 }
 

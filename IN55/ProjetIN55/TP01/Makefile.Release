@@ -17,7 +17,7 @@ CXXFLAGS      = -pipe -fno-keep-inline-dllexport -O2 -frtti -Wall -Wextra -fexce
 INCPATH       = -I'.' -I'../Common' -I'src' -I'../glew-mingw/include' -I'D:/Qt/5.4/mingw491_32/include' -I'D:/Qt/5.4/mingw491_32/include/QtOpenGL' -I'D:/Qt/5.4/mingw491_32/include/QtWidgets' -I'D:/Qt/5.4/mingw491_32/include/QtGui' -I'D:/Qt/5.4/mingw491_32/include/QtCore' -I'release' -I'D:/Qt/5.4/mingw491_32/mkspecs/win32-g++' 
 LINKER      =        g++
 LFLAGS        =        -Wl,-s -Wl,-subsystem,console -mthreads
-LIBS        =        -lglu32 -lopengl32 -lgdi32 -luser32 -L../glew-mingw\lib -lglew32 -LD:/Qt/5.4/mingw491_32/lib -lQt5OpenGL -lQt5Widgets -lQt5Gui -lQt5Core 
+LIBS        =        -lglu32 -lopengl32 -lgdi32 -luser32 -L../glew-mingw\lib -lglew32 -llibassimp -LD:/Qt/5.4/mingw491_32/lib -lQt5OpenGL -lQt5Widgets -lQt5Gui -lQt5Core 
 QMAKE         = D:/Qt/5.4/mingw491_32/bin/qmake.exe
 IDC           = idc
 IDL           = midl
@@ -423,7 +423,36 @@ obj/TP01.o: src/TP01.cpp ../Common/Shapes/Basis.h \
 		../Common/AbstractFramework.h \
 		../glew-mingw/include/GL/glew.h \
 		../Common/Shapes/MeshBuilder.h \
-		src/tiny_obj_loader.h
+		src/tiny_obj_loader.h \
+		../glew-mingw/include/assimp/Importer.hpp \
+		../glew-mingw/include/assimp/types.h \
+		../glew-mingw/include/assimp/defs.h \
+		../glew-mingw/include/assimp/vector3.h \
+		../glew-mingw/include/assimp/Compiler/pushpack1.h \
+		../glew-mingw/include/assimp/Compiler/poppack1.h \
+		../glew-mingw/include/assimp/vector2.h \
+		../glew-mingw/include/assimp/color4.h \
+		../glew-mingw/include/assimp/matrix3x3.h \
+		../glew-mingw/include/assimp/matrix4x4.h \
+		../glew-mingw/include/assimp/quaternion.h \
+		../glew-mingw/include/assimp/vector2.inl \
+		../glew-mingw/include/assimp/vector3.inl \
+		../glew-mingw/include/assimp/color4.inl \
+		../glew-mingw/include/assimp/quaternion.inl \
+		../glew-mingw/include/assimp/matrix3x3.inl \
+		../glew-mingw/include/assimp/matrix4x4.inl \
+		../glew-mingw/include/assimp/config.h \
+		../glew-mingw/include/assimp/scene.h \
+		../glew-mingw/include/assimp/texture.h \
+		../glew-mingw/include/assimp/mesh.h \
+		../glew-mingw/include/assimp/light.h \
+		../glew-mingw/include/assimp/camera.h \
+		../glew-mingw/include/assimp/material.h \
+		../glew-mingw/include/assimp/material.inl \
+		../glew-mingw/include/assimp/anim.h \
+		../glew-mingw/include/assimp/metadata.h \
+		../glew-mingw/include/assimp/Compiler/pstdint.h \
+		../glew-mingw/include/assimp/postprocess.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj/TP01.o src/TP01.cpp
 
 obj/main.o: src/main.cpp src/TP01.h \

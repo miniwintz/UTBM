@@ -1,5 +1,7 @@
 #include "MeshBuilder.h"
 
+using namespace std;
+
 MeshBuilder::MeshBuilder()
 {
 
@@ -11,6 +13,18 @@ MeshBuilder::MeshBuilder(std::vector<tinyobj::shape_t> shapes, std::vector<tinyo
     this->materials = materials;
 }
 
+MeshBuilder::MeshBuilder(const aiScene* scene)
+{
+    this->meshes = scene->mMeshes;
+    this->assimpMaterials = scene->mMaterials;
+    this->cameras = scene->mCameras;
+    this->lights = scene->mLights;
+    this->animations = scene->mAnimations;
+
+    cout << scene->HasAnimations() << endl;
+
+}
+
 MeshBuilder::~MeshBuilder()
 {
 
@@ -18,6 +32,12 @@ MeshBuilder::~MeshBuilder()
 
 
 void MeshBuilder::drawShape(const char* shader_name )
+{
+   buildMeshWithTinyObjLoader();
+    //buildMeshWithAssimp();
+}
+
+void MeshBuilder::buildMeshWithTinyObjLoader()
 {
     for (size_t i = 0; i < shapes.size(); i++)
     {
@@ -34,6 +54,16 @@ void MeshBuilder::drawShape(const char* shader_name )
         glDisableVertexAttribArray( var1 );
        // glDisableVertexAttribArray( var2 );
     }
+}
+
+void MeshBuilder::buildMeshWithAssimp()
+{
+cout << this->meshes[0]->mNumVertices << endl;
+
+//   for(int i =0;i< this->meshes[0]->mNumVertices;i++)
+//   {
+//       cout << i << endl;
+//   }
 }
 
 void MeshBuilder::log()

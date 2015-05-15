@@ -9,7 +9,7 @@ TEMPLATE = app
 
 DEPENDPATH += src
 INCLUDEPATH = ../Common/ src "../glew-mingw\include"
-LIBS += -L"../glew-mingw\lib" -lglew32
+LIBS += -L"../glew-mingw\lib" -lglew32 -llibassimp
 
 DESTDIR = release
 OBJECTS_DIR = obj
