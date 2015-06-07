@@ -46,7 +46,7 @@ public:
         QVector3D         m_Pos;
         QQuaternion     m_Orient;
 
-        Joint& operator=(const Joint& j){
+        void operator=(const Joint& j){
             m_Name = j.m_Name;
             m_Orient = j.m_Orient;
             m_ParentID = j.m_ParentID;
@@ -68,7 +68,7 @@ public:
         GLuint          m_TexID;
 
         // These buffers are used for rendering the animated mesh
-        PositionBuffer  m_PositionBuffer;   // Vertex position stream
+        PositionBuffer  m_PositionBuffer;   // Vertex m_position stream
         NormalBuffer    m_NormalBuffer;     // Vertex normals stream
         Tex2DBuffer     m_Tex2DBuffer;      // Texture coordinate set
         IndexBuffer     m_IndexBuffer;      // Vertex index buffer
@@ -83,10 +83,10 @@ public:
     bool loadModel( const std::string& filename );
     bool loadAnim( const std::string& filename );
     void clearAnimation();
-    void update( float fDeltaTime );
+    void m_update( float fDeltaTime );
     void render();
 
-    void update();
+    void m_update();
     int getIndexJointByName(const std::string& name);
     void computeQuatW(QQuaternion& quat);
     void removeQuotes(std::string& str );
@@ -100,7 +100,7 @@ public:
     void resizeSkelton(int);
     JointList getRestPosition();
     void setIsWalking(bool b);
-    void setPosition( QVector3D position);
+    void setPosition( QVector3D m_position);
     void translation( double coeff);
     MD5Animation& getAnimation();
 
@@ -110,7 +110,7 @@ public:
 protected:
 
     // Prepare the mesh for rendering
-    // Compute vertex positions and normals
+    // Compute vertex m_positions and normals
     bool prepareMesh( Mesh& mesh );
     bool prepareMesh( Mesh& mesh, const MD5Animation::FrameSkeleton& skel );
     //  bool PrepareMesh( Mesh& mesh, const MD5Animation::FrameSkeleton& skel );

@@ -22,18 +22,14 @@ public:
     void keyReleaseEvent ( QKeyEvent * event );
 
     bool enPause;
-    int _numCycle;
-    bool rafraichirData;
+    int numCycle;
 
     QRect mainScreenSize;
 
     OpenGLWidget *vuePrincipal;
-    CameraLibre *joueur;
+    CameraLibre *cameraLibre;
 
-    int _tailleTerrainX;
-    int _tailleTerrainY;
-    int nombreObjets;
-    Objet *liste_objets[50];
+
 
     QTimer *timerJeu;
     QTimer *timerFPS;

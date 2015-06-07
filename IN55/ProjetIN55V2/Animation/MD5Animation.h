@@ -1,7 +1,28 @@
 #ifndef MD5ANIMATION_H
 #define MD5ANIMATION_H
 
-#include "Objets.h"
+#include <cmath>
+#include <vector>
+#include <iostream>
+#include <fstream>
+
+#include <QDesktopWidget>
+#include <QMainWindow>
+#include <QApplication>
+
+#include <QTimer>
+
+#include <QKeyEvent>
+#include <QOpenGLVertexArrayObject>
+
+#include <QVector3D>
+#include <QQuaternion>
+#include <QMatrix4x4>
+
+#include <QtOpenGL/QGLWidget>
+#include <GL/gl.h>
+#include <GL/glu.h>
+
 #include <cassert>
 
 class MD5Animation
@@ -13,7 +34,7 @@ public:
     // Load an animation from the animation file
     bool loadAnimation( const std::string& filename );
     // Update this animation's joint set.
-    void update( float fDeltaTime );
+    void m_update( float fDeltaTime );
     // Draw the animated skeleton
     void render();
 

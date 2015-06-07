@@ -1,17 +1,18 @@
-
 #include "MD5Animation.h"
+
+
 using namespace std;
 
 MD5Animation::MD5Animation()
-: m_iMD5Version( 0 )
-, m_iNumFrames( 0 )
-, m_iNumJoints( 0 )
-, m_iFramRate( 0 )
-, m_iNumAnimatedComponents( 0 )
-, m_fAnimDuration( 0 )
-, m_fFrameDuration( 0 )
-,m_continuous(false)
-, m_fAnimTime( 0 )
+    : m_iMD5Version( 0 )
+    , m_iNumFrames( 0 )
+    , m_iNumJoints( 0 )
+    , m_iFramRate( 0 )
+    , m_iNumAnimatedComponents( 0 )
+    , m_fAnimDuration( 0 )
+    , m_fFrameDuration( 0 )
+    ,m_continuous(false)
+    , m_fAnimTime( 0 )
 {
 
 }
@@ -38,7 +39,6 @@ void MD5Animation::setContinuous( bool b)
 bool MD5Animation::loadAnimation( const std::string& filename )
 {
     ifstream file;
-    //string buffer;
 
     file.open(filename.c_str(),ios::in);
 
@@ -52,7 +52,6 @@ bool MD5Animation::loadAnimation( const std::string& filename )
 
     size_t found;
     found = filename.find_last_of("/\\");
-    //string parent_path = filename.substr(0,found);
 
     string param;
     string junk;
@@ -219,7 +218,7 @@ int MD5Animation::getFileLength( std::istream& file )
     int pos = file.tellg();
     file.seekg(0, std::ios::end );
     int length = file.tellg();
-    // Restore the position of the get pointer
+    // Restore the m_position of the get pointer
     file.seekg(pos);
 
     return length;
@@ -234,7 +233,7 @@ void MD5Animation::buildFrameSkeleton( FrameSkeletonList& skeletons, const Joint
         unsigned int j = 0;
 
         const JointInfo& jointInfo = jointInfos[i];
-        // Start with the base frame position and orientation.
+        // Start with the base frame m_position and m_orientation.
         SkeletonJoint animatedJoint = baseFrames[i];
 
         animatedJoint.m_Parent = jointInfo.m_ParentID;
@@ -293,7 +292,7 @@ void MD5Animation::computeQuatW(QQuaternion &quat)
         quat.setScalar(-sqrtf(t));
 }
 
-void MD5Animation::update( float fDeltaTime )
+void MD5Animation::m_update( float fDeltaTime )
 {
     if ( m_iNumFrames < 1 ) return;
 
@@ -345,7 +344,7 @@ void MD5Animation::render()
 
     const SkeletonJointList& joints = m_AnimatedSkeleton.m_Joints;
 
-    // Draw the joint positions
+    // Draw the joint m_positions
     glBegin( GL_POINTS );
     {
         for ( unsigned int i = 0; i < joints.size(); ++i )
@@ -370,6 +369,7 @@ void MD5Animation::render()
             }
         }
     }
+
     glEnd();
 
     glPopAttrib();

@@ -1,56 +1,50 @@
 #ifndef CAMERALIBRE_H
 #define CAMERALIBRE_H
 
-#include "Objets.h"
+#include <cmath>
+#include <vector>
+#include <iostream>
 
-class CameraLibre : public Objet
+#include <QVector3D>
+
+
+class CameraLibre
 {
         public:
-                CameraLibre(bool visible, QVector3D position, QVector3D cibleCamera, QVector3D orientation, bool possedeCollisionBox, QVector3D diagonaleCollisionBox, bool rotation90degBoundBox, float vitesseJoueur = 0, float sensivity = 0, QString fichierMesh = "", QString fichierTexture = "", bool isTextureUVmap = false);
+                CameraLibre(QVector3D position, QVector3D cibleCamera, QVector3D orientation, float vitessecameraLibre = 0, float sensivite = 0);
 
-                void Animate (Objet *listeObjet[], int nombreObjets, int tailleTerrainX, int tailleTerrainY); //fonction la plus utilise, elle est appele a  chaques fois que l'on rafraichit l'image (pour deplacer la camera par ex)
-             //   bool test_Collision (QVector3D positionObjet1, QVector3D boxObjet1, QVector3D positionObjet2, QVector3D boxObjet2);
+                void Animate (); //fonction la plus utilise, elle est appele a  chaques fois que l'on rafraichit l'image (pour deplacer la camera par ex)
 
-                void mouvementSouris (int new_x, int new_y);
+                void mouvementCameraSouris (int new_x, int new_y);
                 void deplacement (int numDirection, bool valeur);
-
-            //    int getAngleRotationArme();
-             //   void setToucheArmeActive(bool statut);
-         //      bool getStatutTir();
-          //    QVector3D getCoordOrigineTir();
-          //      QVector3D getCoordVecteurTir();
 
                 void setVitesse(float speed);
                 float getVitesse();
+
                 QVector3D getCibleCamera();
-                float _sensivity;
-                float _theta;
-                float _phi;
+                QVector3D getPosition();
+
+                void setPosition(QVector3D m_position);
+                float sensivity;
+                float theta;
+                float phi;
 
         private:
-                void ConversionAnglesVersVecteurs();
-                void ConversionVecteursVersAngles();
-                void DeterminerConstanteSaut(float altitudeInitiale, float altitudeVoulu);
+                void conversionAnglesVersVecteurs();
+                void conversionVecteursVersAngles();
 
-                float _vitesse;
-             //   bool _collision;
+                float m_vitesse;
 
-                bool Mouvement[6];
-                bool joueurAccroupi;
+                bool m_mouvementCamera[6];
 
-                QVector3D _cibleCamera; //contient les coordonnees du point que le joueur regarde
-                QVector3D _forward; //contient les coord du !vecteur! de la direction que le joueur regarde, le calcul entre _targetJoueur et _forward sont effectuee par les fonctions ConversionAnglesVersVecteurs() et ConversionVecteursVersAngles()
+                QVector3D m_position;
+                QVector3D m_orientation;
 
-                QVector3D _up; //Vecteur vertical du monde, utilisÃ© dans les calculs
-                QVector3D _left; //Vecteur qui montre la gauche (orthogonal au sens de deplacement et au vecteur up)
+                QVector3D m_cibleCamera; //contient les coordonnees du point que le cameraLibre regarde
+                QVector3D m_forward; //contient les coord du vecteur de la direction que le cameraLibre regarde, le calcul entre _targetcameraLibre et m_forward sont effectuee par les fonctions conversionAnglesVersVecteurs() et conversionVecteursVersAngles()
 
-
-                struct GestionSaut //Toutes les donnees qui influe le saut
-                                {float acceleration; float vitesseBase;
-                                float altitude ; float altitudeInitial; float altitudeVoulu; int step;
-                                float altitudePrecedente; bool enCollision;};
-        GestionSaut saut;
-
+                QVector3D m_up; //Vecteur vertical du monde, utilisé dans les calculs
+                QVector3D m_left; //Vecteur qui montre la gauche (orthogonal au sens de deplacement et au vecteur m_up)
 };
 
 

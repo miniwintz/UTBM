@@ -45,32 +45,22 @@ class Objet
 {
 
     public:
-        Objet(bool visible, QVector3D position, QVector3D orientation, bool possedeCollisionBox, QVector3D diagonaleBox, bool rotation90degBoundBox = false, QString nomObjet = "", QString fichierMesh = "", QString fichierTexture = "", bool textureUV = false, int repeatx = 1, int repeaty = 1);
+        Objet(QVector3D position, QVector3D orientation, QString nomObjet = "", QString fichierMesh = "", QString fichierTexture = "", bool textureUV = false, int repeatx = 1, int repeaty = 1);
 
         void genererTextureOpenGL(bool useMipMap); //car les fonctions de chargement de texture openGL ne peuvent Ãªtre appelÃ©
                                                    //qu'apres que le widget QGLWidget correspondant ait initialisÃ© les variables opengGL
                                                    // (ce qui est fait apres la creation de l'objet et qui explique que cette fonction ne soit pas
                                                    // a l'interieur de la fonction loadTexture(); )
         void afficherObjet();
-      //  void dessinerBoundBox();
-      //  bool getPossedeCollisionBox();
-
         void setPosition(QVector3D position);
         QVector3D getPosition();
-      //  QVector3D getCollisionBox();
-
 
     protected: //protected pour etre accessible à la classe personnage, heritant d'objet
         void loadMesh();
-        void loadTexture();
 
         QString _nomObjet;
         QVector3D _position;
         QVector3D _orientation;
-       // bool _possedeCollisionBox;
-     //   QVector3D _collisionBox;
-      //  bool _rotation90degCollisionBox; //si true, la boundbox dois etre tourné de 90 degré
-      //  bool _isVisible; //faut-il l'afficher?
 
 
         //Variable pour le chargement du mesh et de la texture

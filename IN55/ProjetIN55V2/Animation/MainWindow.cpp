@@ -8,195 +8,58 @@
 #define SAUT 4
 #define ACCROUPI 5
 
+using namespace std;
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
     QApplication::setOverrideCursor( QCursor( Qt::BlankCursor ));
-    this->setWindowTitle("IN55");
-    resize(640,480);
 
-   // fullscreen = true;
+    this->setWindowTitle("Projet IN55 - Animation");
+
+
+    resize(800,600);
+    fullscreen = false;
+
     mouseTracked = true;
-
-
-   // rafraichirData = false;
 
     anti_repetition = false;
 
-    int nbParamParObjet = 0;
-    int nbParamDefinis = 0;
-    QString nomObjet;
-    bool isVisible = false;
-    QVector3D positionObjet;
+    QVector3D m_positionObjet;
 
-    bool possedeCollisionBox = false;
-    QVector3D diagonaleCollisionBox;
-    bool rotation90degCollisionBox = false;
+    QVector3D m_orientationObjet;
 
+    QVector3D m_cibleCamera;
+    float m_vitessecameraLibre = 0.25;
+    float sensivity = 0.1;
 
-    QVector3D orientationObjet;
-    QString fichierMesh;
-    QString fichierTexture;
-    bool isTextureUVmap = false;
-    float repeatTextX = 0.0;
-    float repeatTextY = 0.0;
-
-    QVector3D cibleCamera;
-    float vitesseJoueur = 0;
-    float sensivity = 0;
-
-    QVector3D positionCamera;
+    QVector3D m_positionCamera;
 
 
-    QFile file("listeObjetsMap.txt");
-    if (file.open(QIODevice::ReadOnly) == false)
-        qDebug() << "----->ERREUR 01 ; Chargement du fichier map : FAILED";
+    m_positionObjet.setX(29);
+    m_positionObjet.setY(16);
+    m_positionObjet.setZ(0);
 
-    nombreObjets = 0;
+    m_orientationObjet.setX(0);
+    m_orientationObjet.setY(0);
+    m_orientationObjet.setZ(0);
 
-    QTextStream fichier(&file);
-    while(!fichier.atEnd())
-    {
-        QString line = fichier.readLine();
-        if (line[0] != '#')
-        {
-            QStringList mots = line.split(('='));
-            if (mots[0]=="tailleTerrainX")
-                _tailleTerrainX = mots[1].toInt();
-            if (mots[0]=="tailleTerrainY")
-                _tailleTerrainY = mots[1].toInt();
-            if (mots[0]=="nbParamParObjet")
-                nbParamParObjet = mots[1].toInt();;
-            if (mots[0]=="!NouvelObjet")
-                nbParamDefinis = 0;
-            if (mots[0]=="nomObjet")
-            {
-                nomObjet = mots[1];
-                nbParamDefinis++;
-            }
-            if (mots[0]=="isVisible")
-            {
-                isVisible = mots[1].toInt();
-                nbParamDefinis++;
-            }
-            if (mots[0]=="posX")
-            {
-                positionObjet.setX(mots[1].toFloat());
-                nbParamDefinis++;
-            }
-            if (mots[0]=="posY")
-            {
-                positionObjet.setY(mots[1].toFloat());
-                nbParamDefinis++;
-            }
-            if (mots[0]=="posZ")
-            {
-                positionObjet.setZ(mots[1].toFloat());
-                nbParamDefinis++;
-            }
-            if (mots[0]=="orientationX")
-            {
-                orientationObjet.setX(mots[1].toFloat());
-                nbParamDefinis++;
-            }
-            if (mots[0]=="orientationY")
-            {
-                orientationObjet.setY(mots[1].toFloat());
-                nbParamDefinis++;
-            }
-            if (mots[0]=="orientationZ")
-            {
-                orientationObjet.setZ(mots[1].toFloat());
-                nbParamDefinis++;
-            }
-            if (mots[0]=="possedeCollisionBox")
-            {
-                possedeCollisionBox=mots[1].toInt();
-                nbParamDefinis++;
-            }
-            if (mots[0]=="diagCollisionBoxX")
-            {
-                diagonaleCollisionBox.setX(mots[1].toFloat());
-                nbParamDefinis++;
-            }
-            if (mots[0]=="diagCollisionBoxY")
-            {
-                diagonaleCollisionBox.setY(mots[1].toFloat());
-                nbParamDefinis++;
-            }
-            if (mots[0]=="diagCollisionBoxZ")
-            {
-                diagonaleCollisionBox.setZ(mots[1].toFloat());
-                nbParamDefinis++;
-            }
-            if (mots[0]=="rotation90degCollisionBox")
-            {
-                rotation90degCollisionBox=mots[1].toInt();
-                nbParamDefinis++;
-            }
-            if (mots[0]=="fichierMesh")
-            {
-                fichierMesh = mots[1];
-                nbParamDefinis++;
-            }
-            if (mots[0]=="fichierTexture")
-            {
-                fichierTexture = mots[1];
-                nbParamDefinis++;
-            }
-            if (mots[0]=="isTextureUVmap")
-            {
-                isTextureUVmap = mots[1].toInt();
-                nbParamDefinis++;
-            }
-            if (mots[0]=="repeatTextX")
-            {
-                repeatTextX = mots[1].toFloat();
-                nbParamDefinis++;
-            }
-            if (mots[0]=="repeatTextY")
-            {
-                repeatTextY = mots[1].toFloat();
-                nbParamDefinis++;
-            }
-            if (mots[0]=="cibleCameraX")
-                cibleCamera.setX(mots[1].toFloat());
-            if (mots[0]=="cibleCameraY")
-                cibleCamera.setY(mots[1].toFloat());
-            if (mots[0]=="cibleCameraZ")
-                cibleCamera.setZ(mots[1].toFloat());
-            if (mots[0]=="vitesseJoueur")
-                vitesseJoueur = mots[1].toFloat();
-            if (mots[0]=="sensivity")
-                sensivity = mots[1].toFloat();
-            if (mots[0]=="!FinObjet")
-            {
-                if (nbParamDefinis == nbParamParObjet)
-                {
-                    liste_objets[nombreObjets] = new Objet(isVisible, positionObjet, orientationObjet, possedeCollisionBox, diagonaleCollisionBox, rotation90degCollisionBox, nomObjet, fichierMesh, fichierTexture, isTextureUVmap, repeatTextX,repeatTextY);
-                    nombreObjets++;
-                }
-                else
-                    qDebug() << "Erreur 01 : Erreur chargement Objet, nombre parametre incorrect";
-            }
-            if (mots[0]=="!FinJoueur")
-            {
-                //de meme on cree le joueur (qui hérite de la classe Objet), donc juste quelques membres et attributs en plus (voir Personnage.cpp et Objets.cpp)
-                joueur = new CameraLibre(isVisible, positionObjet, cibleCamera, orientationObjet, possedeCollisionBox, diagonaleCollisionBox, rotation90degCollisionBox, vitesseJoueur, sensivity, fichierMesh, fichierTexture, isTextureUVmap);
-            }
-        }
-    }
+    m_cibleCamera.setX(36);
+    m_cibleCamera.setY(26);
+    m_cibleCamera.setZ(4);
 
-    //////////////////////////////
-    ////---Camera Principale--////
-    //////////////////////////////
-    positionCamera = joueur->getPosition();
-    positionCamera+=QVector3D(0,0,5);//Pour mettre la camera à 5 au dessus du sol
-    cibleCamera = joueur->getCibleCamera();
+
+    //de meme on cree le cameraLibre (qui hérite de la classe Objet), donc juste quelques membres et attributs en plus (voir Personnage.cpp et Objets.cpp)
+    cameraLibre = new CameraLibre(m_positionObjet, m_cibleCamera, m_orientationObjet,m_vitessecameraLibre, sensivity);
+
+    m_positionCamera = cameraLibre->getPosition();
+    m_positionCamera += QVector3D(0,0,5);//Pour mettre la camera à 5 au dessus du sol
+    m_cibleCamera = cameraLibre->getCibleCamera();
+
     QDesktopWidget widget;
     mainScreenSize = widget.availableGeometry(widget.primaryScreen());
 
-    qDebug() << "+ Resolution de l'écran : " << mainScreenSize.width() << "x" << mainScreenSize.height();
-    vuePrincipal = new OpenGLWidget (this, joueur, positionCamera, cibleCamera, _tailleTerrainX, _tailleTerrainY, liste_objets, nombreObjets,"Vue Principale");
+    cout << "+ Resolution de l'écran : " << mainScreenSize.width() << "x" << mainScreenSize.height() << endl;
+    vuePrincipal = new OpenGLWidget (this, cameraLibre, m_positionCamera, m_cibleCamera);
 
     setCentralWidget(vuePrincipal);
 
@@ -205,12 +68,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     timerFPS = new QTimer(this);
 
-    qDebug() <<  "+ Chargement fenetre principale : OK" ;
+    cout <<  "+ Chargement fenetre principale : OK" << endl;
     lancerJeu();
 
     this->setMouseTracking(true);
     vuePrincipal->setMouseTracking(true);
-
 }
 
 MainWindow::~MainWindow()
@@ -233,8 +95,8 @@ void MainWindow::stopperJeu()
 
 void MainWindow::cycleTimerJeu()
 {
-    _numCycle++;
-    joueur->Animate(liste_objets, nombreObjets, _tailleTerrainX, _tailleTerrainY);
+    numCycle++;
+    cameraLibre->Animate();
 
     vuePrincipal->updateGL();
 }
@@ -246,44 +108,46 @@ void MainWindow::mouseMoveEvent ( QMouseEvent *event )
             int xrel = (width()/2 - event->x());
             int yrel = ( height()/2 - event->y());
 
-        joueur->mouvementSouris ( xrel, yrel );
+        cameraLibre->mouvementCameraSouris ( xrel, yrel );
         QPoint pos(width()/2,height()/2);
         QCursor::setPos(mapToGlobal(pos));
 
         anti_repetition = true;
     }
     else
+    {
         anti_repetition = false;
+    }
 }
 
 
 
 void MainWindow::wheelEvent ( QWheelEvent *event )
 {
-    float vitesseJoueur = joueur->getVitesse();
+    float m_vitessecameraLibre = cameraLibre->getVitesse();
 
     if ( event->delta() >= 0 )
     {
-        vitesseJoueur += 0.1;
-        if (vitesseJoueur > 6)
-            vitesseJoueur = 6;
+        m_vitessecameraLibre += 0.5;
+        //if (m_vitessecameraLibre > 6)
+        //    m_vitessecameraLibre = 6;
 
-        joueur->setVitesse(vitesseJoueur);
+        cameraLibre->setVitesse(m_vitessecameraLibre);
     }
     else
     {
-        vitesseJoueur -= 0.1;
-        if (vitesseJoueur < 0)
-            vitesseJoueur = 0;
-        joueur->setVitesse(vitesseJoueur);
+        m_vitessecameraLibre -= 0.1;
+        if (m_vitessecameraLibre < 0)
+            m_vitessecameraLibre = 0;
+        cameraLibre->setVitesse(m_vitessecameraLibre);
     }
-    qDebug() << "Speed =" << vitesseJoueur;
+    qDebug() << "Speed =" << m_vitessecameraLibre;
 }
 
 
 void MainWindow::keyPressEvent ( QKeyEvent *event )
 {
-    QVector3D _posi(joueur->getPosition());
+    QVector3D _posi(cameraLibre->getPosition());
 
 
     switch ( event->key() )
@@ -304,24 +168,24 @@ void MainWindow::keyPressEvent ( QKeyEvent *event )
             }
             break;
         case Qt::Key_Z:
-            joueur->deplacement ( AVANCER, true );
+            cameraLibre->deplacement ( AVANCER, true );
             break;
         case Qt::Key_S:
-            joueur->deplacement ( RECULER, true );
+            cameraLibre->deplacement ( RECULER, true );
             break;
         case Qt::Key_Q:
-            joueur->deplacement ( GAUCHE, true );
+            cameraLibre->deplacement ( GAUCHE, true );
             break;
         case Qt::Key_D:
-            joueur->deplacement ( DROITE, true );
+            cameraLibre->deplacement ( DROITE, true );
             break;
         case Qt::Key_Control:
             qDebug() << "A genou";
-            joueur->deplacement ( ACCROUPI, true );
+            cameraLibre->deplacement ( ACCROUPI, true );
             break;
         case Qt::Key_Space:
             //qDebug() << "Space";
-            joueur->deplacement ( SAUT, true );
+            cameraLibre->deplacement ( SAUT, true );
             break;
         case Qt::Key_Shift:
             qDebug() << "Pos = " << _posi.x() << _posi.y() << _posi.z();
@@ -371,24 +235,24 @@ void MainWindow::keyReleaseEvent ( QKeyEvent * event )
     switch ( event->key() )
     {
         case Qt::Key_Z:
-            joueur->deplacement ( AVANCER, false );
+            cameraLibre->deplacement ( AVANCER, false );
             break;
         case Qt::Key_S:
-            joueur->deplacement ( RECULER, false );
+            cameraLibre->deplacement ( RECULER, false );
             break;
         case Qt::Key_Q:
-            joueur->deplacement ( GAUCHE, false );
+            cameraLibre->deplacement ( GAUCHE, false );
             break;
         case Qt::Key_D:
-            joueur->deplacement ( DROITE, false );
+            cameraLibre->deplacement ( DROITE, false );
             break;
         case Qt::Key_Control:
             qDebug() << "Debout";
-            joueur->deplacement ( ACCROUPI, false );
+            cameraLibre->deplacement ( ACCROUPI, false );
             break;
         case Qt::Key_Space:
             //qDebug() << "Space";
-            joueur->deplacement ( SAUT, false );
+            cameraLibre->deplacement ( SAUT, false );
             break;
         case Qt::Key_N:
         {
