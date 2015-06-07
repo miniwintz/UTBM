@@ -29,7 +29,8 @@ MD5Model::MD5Model(const MD5Model& model)
 }
 
 
-void MD5Model::setPosition(QVector3D m_position){
+void MD5Model::setPosition(QVector3D m_position)
+{
     m_Position = m_position;
 }
 
@@ -97,10 +98,10 @@ void MD5Model::m_update( float fDeltaTime )
     }
 }
 
-void MD5Model::m_update(){
+void MD5Model::m_update()
+{
     for(unsigned int i=0; i < m_Meshes.size(); i++)
     {
-        //prepareMesh(m_Meshes[i],m_Joints);
         prepareMesh(m_Meshes[i]);
         prepareNormals(m_Meshes[i]);
     }
@@ -111,8 +112,8 @@ void MD5Model::afficheSkelton(MD5Model::JointList& jl)
     for(unsigned int j = 0; j<jl.size();j++)
     {
         MD5Model::Joint joint = jl[j];
-        //if(joint.m_Name=="origin")
-        qDebug() << "JOINT " << qPrintable(QString::fromStdString(joint.m_Name)) << joint.m_ParentID << joint.m_Orient << joint.m_Pos;
+
+        //qDebug() << "JOINT " << qPrintable(QString::fromStdString(joint.m_Name)) << joint.m_ParentID << joint.m_Orient << joint.m_Pos;
 
     }
 }
@@ -124,7 +125,7 @@ GLuint MD5Model::loadTexture ( string filename, bool useMipMap)
 
     if (!baseTexture.load ( QString::fromStdString(filename), "PNG" ))
     {
-        qDebug() << "----->ERREUR 02 ; Chargement texture btdtgdrgddddddd" << QString::fromStdString(filename) << "= FAILED";
+        qDebug() << "----->ERREUR 02 ; Chargement texture " << QString::fromStdString(filename) << "= FAILED";
         return 0;
     }
 
@@ -275,22 +276,14 @@ bool MD5Model::loadModel( const string &filename )
 
                     if ( shaderPath.find(parent_path) != string::npos )
                     {
-
-                        cout << "1" << endl;
                         texturePath = shaderPath;
                     }
                     else
                     {
-                        cout << "2" << endl;
-                        cout << shaderPath << endl;
-                        //texturePath = parent_path + "/" + shaderPath;
-
-                        texturePath = "C:/Users/Olivier/Downloads/IN55-master/IN55-master/Animation/Meshs/boarman/" + shaderPath;
-
-                        cout << texturePath << endl;
+                        texturePath = "./Meshs/textures/" + shaderPath;
                     }
 
-                    mesh.m_TexID = loadTexture( texturePath.c_str(), false );
+                   // mesh.m_TexID = loadTexture( texturePath.c_str(), false );
                     ignoreLine(file,fileLength); // Ignore everything else on the line
                 }
                 else if ( param == "numverts")
@@ -527,15 +520,18 @@ bool MD5Model::prepareNormals( Mesh& mesh )
 void MD5Model::render()
 {
     glPushMatrix();
-    glTranslated ( m_Position.x(), m_Position.y(), m_Position.z());
-    glMultMatrixf( m_LocalToWorldMatrix.data() );
+      glTranslated ( m_Position.x(), m_Position.y(), m_Position.z());
+      glMultMatrixf( m_LocalToWorldMatrix.data() );
 
-    // Render the meshes
-    for ( unsigned int i = 0; i < m_Meshes.size(); ++i )
+      // Render the meshes
+      for ( unsigned int i = 0; i < m_Meshes.size(); ++i )
+      {
+
         renderMesh( m_Meshes[i] );
+      }
 
-    m_Animation.render();
-    //renderSkeleton(m_Joints,"toe.R");
+      m_Animation.render();
+
     glPopMatrix();
 }
 
@@ -550,7 +546,7 @@ void MD5Model::renderMesh( const Mesh& mesh )
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
     glEnableClientState( GL_NORMAL_ARRAY );
 
-    glBindTexture( GL_TEXTURE_2D, mesh.m_TexID );
+  //  glBindTexture( GL_TEXTURE_2D, mesh.m_TexID );
     glVertexPointer( 3, GL_FLOAT, 0, &(mesh.m_PositionBuffer[0]) );
     glNormalPointer( GL_FLOAT, 0, &(mesh.m_NormalBuffer[0]) );
     glTexCoordPointer( 2, GL_FLOAT, 0, &(mesh.m_Tex2DBuffer[0]) );
@@ -562,9 +558,9 @@ void MD5Model::renderMesh( const Mesh& mesh )
     glDisableClientState( GL_VERTEX_ARRAY );
 
     glPolygonMode(GL_FRONT, GL_FILL);
-    glPolygonMode(GL_BACK, GL_FILL);
+   glPolygonMode(GL_BACK, GL_FILL);
 
-    glBindTexture( GL_TEXTURE_2D, 0 );
+   // glBindTexture( GL_TEXTURE_2D, 0 );
 }
 
 void MD5Model::renderNormals(  const Mesh& mesh )

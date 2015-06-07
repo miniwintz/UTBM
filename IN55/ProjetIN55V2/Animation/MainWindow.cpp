@@ -5,8 +5,8 @@
 #define RECULER 1
 #define GAUCHE 2
 #define DROITE 3
-#define SAUT 4
-#define ACCROUPI 5
+#define MONTER 4
+#define DESCENDRE 5
 
 using namespace std;
 
@@ -48,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     m_cibleCamera.setZ(4);
 
 
-    //de meme on cree le cameraLibre (qui hérite de la classe Objet), donc juste quelques membres et attributs en plus (voir Personnage.cpp et Objets.cpp)
+    //de même on crée la camera libre
     cameraLibre = new CameraLibre(m_positionObjet, m_cibleCamera, m_orientationObjet,m_vitessecameraLibre, sensivity);
 
     m_positionCamera = cameraLibre->getPosition();
@@ -69,7 +69,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     timerFPS = new QTimer(this);
 
     cout <<  "+ Chargement fenetre principale : OK" << endl;
-    lancerJeu();
+    lancerApplication();
 
     this->setMouseTracking(true);
     vuePrincipal->setMouseTracking(true);
@@ -80,14 +80,14 @@ MainWindow::~MainWindow()
 
 }
 
-void MainWindow::lancerJeu()
+void MainWindow::lancerApplication()
 {
         timerJeu->start(20);
         timerFPS->start(1000);
 }
 
 
-void MainWindow::stopperJeu()
+void MainWindow::stopperApplication()
 {
         timerJeu->stop();
         timerFPS->stop();
@@ -129,16 +129,15 @@ void MainWindow::wheelEvent ( QWheelEvent *event )
     if ( event->delta() >= 0 )
     {
         m_vitessecameraLibre += 0.5;
-        //if (m_vitessecameraLibre > 6)
-        //    m_vitessecameraLibre = 6;
-
         cameraLibre->setVitesse(m_vitessecameraLibre);
     }
     else
     {
         m_vitessecameraLibre -= 0.1;
         if (m_vitessecameraLibre < 0)
-            m_vitessecameraLibre = 0;
+        {
+          m_vitessecameraLibre = 0;
+        }
         cameraLibre->setVitesse(m_vitessecameraLibre);
     }
     qDebug() << "Speed =" << m_vitessecameraLibre;
@@ -159,12 +158,12 @@ void MainWindow::keyPressEvent ( QKeyEvent *event )
             if ( !enPause )
             {
                 enPause = true;
-                stopperJeu();
+                stopperApplication();
             }
             else
             {
                 enPause = false;
-                lancerJeu();
+                lancerApplication();
             }
             break;
         case Qt::Key_Z:
@@ -180,12 +179,12 @@ void MainWindow::keyPressEvent ( QKeyEvent *event )
             cameraLibre->deplacement ( DROITE, true );
             break;
         case Qt::Key_Control:
-            qDebug() << "A genou";
-            cameraLibre->deplacement ( ACCROUPI, true );
+            qDebug() << "Descendre";
+            cameraLibre->deplacement ( DESCENDRE, true );
             break;
         case Qt::Key_Space:
-            //qDebug() << "Space";
-            cameraLibre->deplacement ( SAUT, true );
+            //qDebug() << "Monter";
+            cameraLibre->deplacement ( MONTER, true );
             break;
         case Qt::Key_Shift:
             qDebug() << "Pos = " << _posi.x() << _posi.y() << _posi.z();
@@ -220,7 +219,6 @@ void MainWindow::keyPressEvent ( QKeyEvent *event )
         {
             if(!event->isAutoRepeat()){
                 vuePrincipal->g_model.loadAnim("Meshs/boarman/doom.md5anim");
-              //  vuePrincipal->g_model.setIsWalking(true);
                 vuePrincipal->g_model.getAnimation().setContinuous(true);
             }
         }
@@ -248,11 +246,11 @@ void MainWindow::keyReleaseEvent ( QKeyEvent * event )
             break;
         case Qt::Key_Control:
             qDebug() << "Debout";
-            cameraLibre->deplacement ( ACCROUPI, false );
+            cameraLibre->deplacement ( DESCENDRE, false );
             break;
         case Qt::Key_Space:
             //qDebug() << "Space";
-            cameraLibre->deplacement ( SAUT, false );
+            cameraLibre->deplacement ( MONTER, false );
             break;
         case Qt::Key_N:
         {

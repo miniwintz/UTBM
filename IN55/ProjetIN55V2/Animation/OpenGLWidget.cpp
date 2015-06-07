@@ -11,6 +11,8 @@ OpenGLWidget::OpenGLWidget ( QWidget *parent, CameraLibre *cameraLibre, QVector3
     m_positionCamera = positionCamera;
     m_cibleCamera = targetCamera;
 
+    basis = new Basis(10);
+
     setFormat ( QGLFormat ( QGL::DoubleBuffer | QGL::DepthBuffer ) );
 }
 
@@ -115,6 +117,9 @@ void OpenGLWidget::paintGL()
 
     m_cibleCamera = targetcameraLibre;
     gluLookAt(m_positionCamera.x(),m_positionCamera.y(),m_positionCamera.z(),m_cibleCamera.x(),m_cibleCamera.y(),m_cibleCamera.z(),0,0,1);
+
+
+    basis->drawShape();
 
     // Rendu du modele
     g_model.m_update(0.05);

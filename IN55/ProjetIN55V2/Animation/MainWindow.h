@@ -3,6 +3,7 @@
 
 #include "OpenGLWidget.h"
 
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -13,8 +14,8 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    void lancerJeu();
-    void stopperJeu();
+    void lancerApplication();
+    void stopperApplication();
 
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);

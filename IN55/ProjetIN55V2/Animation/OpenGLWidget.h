@@ -2,6 +2,7 @@
 #define OPENGLWIDGET_H
 
 #include "MD5Model.h"
+#include "Shapes/Basis.h"
 
 class OpenGLWidget : public QGLWidget
 {
@@ -25,6 +26,7 @@ class OpenGLWidget : public QGLWidget
             QVector3D targetcameraLibre;
 
             MD5Model g_model;
+            Basis *basis;
 };
 
 

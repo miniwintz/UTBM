@@ -4,24 +4,30 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
-QT       += opengl
-QT       += widgets multimedia
+DEPENDPATH += src
+INCLUDEPATH = ../Common/ src
 
 TARGET = Animation
 TEMPLATE = app
 
+QT       += core gui
+QT       += opengl
+QT       += widgets multimedia
 
-SOURCES += main.cpp\
-        MainWindow.cpp \
+SOURCES += ../Common/Shapes/Basis.cpp \
+    main.cpp\
+    MainWindow.cpp \
     OpenGLWidget.cpp \
     CameraLibre.cpp \
     MD5Model.cpp \
     MD5Animation.cpp
 
-HEADERS  += MainWindow.h \
+
+HEADERS  += ../Common/Shapes/Basis.h \
+    MainWindow.h \
     OpenGLWidget.h \
     CameraLibre.h \
     MD5Model.h \
     MD5Animation.h
+
 
