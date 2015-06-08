@@ -1,0 +1,37 @@
+# listeObjetsMap.txt
+#
+tailleTerrainX=150
+tailleTerrainY=150
+#
+nbParamParObjet=18
+#
+#
+#
+#
+#################
+##Config joueur##
+#################
+#
+!NouveauJoueur
+isVisible=1
+posX=29
+posY=16
+posZ=0
+orientationX=0
+orientationY=0
+orientationZ=0
+possedeCollisionBox=0
+diagCollisionBoxX=0
+diagCollisionBoxY=0
+diagCollisionBoxZ=0
+rotation90degCollisionBox=0
+fichierMesh=Meshs/whisp.obj
+fichierTexture=pics/whisp.png
+isTextureUVmap=0
+cibleCameraX=36
+cibleCameraY=26
+cibleCameraZ=4
+vitesseJoueur=0.25
+sensivity=0.1
+!FinJoueur
+
