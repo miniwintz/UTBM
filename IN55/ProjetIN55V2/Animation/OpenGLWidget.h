@@ -12,7 +12,12 @@ class OpenGLWidget : public QGLWidget
             void resizeGL ( int width, int height ); //est appele quand on cree le widget
             void paintGL(); //appelle apres lors des m_updateGL (quand on veut rafraichir)
             GLuint loadTexture ( QString filename, bool useMipMap); //chargement des textures
-            static void dessinerRepere();
+
+
+       void loadSkybox();
+       void drawSkybox();
+
+       GLuint cube_map_texture_ID[6];
 
             void conversionVecteursVersAngles();
 

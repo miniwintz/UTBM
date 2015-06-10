@@ -14,11 +14,43 @@ OpenGLWidget::OpenGLWidget ( QWidget *parent, CameraLibre *cameraLibre, QVector3
     basis = new Basis(10);
 
     setFormat ( QGLFormat ( QGL::DoubleBuffer | QGL::DepthBuffer ) );
+
+    loadSkybox();
 }
 
 void OpenGLWidget::initializeGL()
 {
-    g_model.loadModel( "Meshs/boarman/boarman.md5mesh" );
+
+    qglClearColor ( Qt::black );
+
+
+    /////////////////////Eclairage/////////////////////////////////////
+    float ambientColor[4] = {0.7f,0.7f,0.7f,1.0f};
+
+    glLightModelf(GL_LIGHT_MODEL_LOCAL_VIEWER,GL_TRUE);
+
+    float global_ambient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
+
+    glEnable(GL_DEPTH_TEST);	// Active le test de profondeur
+    glEnable(GL_LIGHTING);          // Active l'éclairage
+    glEnable(GL_LIGHT0);            // Active light0
+        glLightfv(GL_LIGHT0,GL_AMBIENT,ambientColor);
+        glLightf(GL_LIGHT0,GL_LINEAR_ATTENUATION ,0.1f);
+
+    /*config reflection lumière sur les matériaux*/
+  //  float qaGreen[] = {0.0,1.0,0.0,1.0};
+    float qaWhite[] = {1.0,1.0,1.0,1.0};
+    float qaGrey[] = {0.42,0.42,0.42,1.0};
+
+   // glMaterialfv(GL_FRONT,GL_AMBIENT,qaWhite);
+    glMaterialfv(GL_FRONT,GL_DIFFUSE,qaGrey);
+    glMaterialfv(GL_FRONT,GL_SPECULAR,qaWhite);
+    glMaterialf(GL_FRONT,GL_SHININESS,60.0);
+    /*fin config lum*/
+
+    g_model.loadModel( "data/meshes/monster.md5mesh" );
+    loadSkybox();
 }
 
 GLuint OpenGLWidget::loadTexture ( QString filename, bool useMipMap)
@@ -54,10 +86,84 @@ GLuint OpenGLWidget::loadTexture ( QString filename, bool useMipMap)
 }
 
 
-/*REPERE*/
-void OpenGLWidget::dessinerRepere()
+void OpenGLWidget::loadSkybox()
 {
+    cube_map_texture_ID[0]=loadTexture("sky/jajalien1_front",false);
+    cube_map_texture_ID[3]=loadTexture("sky/jajalien1_back",false);
+    cube_map_texture_ID[2]=loadTexture("sky/jajalien1_left",false);
+    cube_map_texture_ID[1]=loadTexture("sky/jajalien1_right",false);
+    cube_map_texture_ID[4]=loadTexture("sky/jajalien1_top",false);
+  //  cube_map_texture_ID[5]=loadTexture("sky/down",false);
 
+}
+
+void OpenGLWidget::drawSkybox()
+{
+    // Réglage de l'orientation
+    glPushMatrix();
+int scaleValue = 500;
+int transX = -200;
+
+
+glBindTexture(GL_TEXTURE_2D,cube_map_texture_ID[2]); //FRONT
+    glBegin(GL_QUADS);
+        glTexCoord2d(0,0);glVertex3d(scaleValue+transX,0+transX,0);
+        glTexCoord2d(0,1);glVertex3d(scaleValue+transX,0+transX,300);
+        glTexCoord2d(1,1);glVertex3d(0+transX,0+transX,300);
+        glTexCoord2d(1,0); glVertex3d(0+transX,0+transX,0);
+    glEnd();
+
+
+
+glBindTexture(GL_TEXTURE_2D,cube_map_texture_ID[0]); //LEFT
+    glBegin(GL_QUADS);
+        glTexCoord2d(0,0); glVertex3d(0+transX,0+transX,0);
+        glTexCoord2d(0,1); glVertex3d(0+transX,0+transX,300);
+        glTexCoord2d(1,1); glVertex3d(0+transX,scaleValue+transX,300);
+        glTexCoord2d(1,0); glVertex3d(0+transX,scaleValue+transX,0);
+    glEnd();
+
+
+
+glBindTexture(GL_TEXTURE_2D,cube_map_texture_ID[3]); //RIGHT
+    glBegin(GL_QUADS);
+        glTexCoord2d(0,0); glVertex3d(scaleValue+transX,scaleValue+transX,0);
+        glTexCoord2d(0,1);glVertex3d(scaleValue+transX,scaleValue+transX,300);
+        glTexCoord2d(1,1);glVertex3d(scaleValue+transX,0+transX,300);
+        glTexCoord2d(1,0);glVertex3d(scaleValue+transX,0+transX,0);
+    glEnd();
+
+
+
+glBindTexture(GL_TEXTURE_2D,cube_map_texture_ID[1]); //BACK
+    glBegin(GL_QUADS);
+        glTexCoord2d(0,0); glVertex3d(0+transX,scaleValue+transX,0);
+        glTexCoord2d(0,1); glVertex3d(0+transX,scaleValue+transX,300);
+        glTexCoord2d(1,1); glVertex3d(scaleValue+transX,scaleValue+transX,300);
+        glTexCoord2d(1,0); glVertex3d(scaleValue+transX,scaleValue+transX,0);
+    glEnd();
+
+
+//glBindTexture(GL_TEXTURE_2D,cube_map_texture_ID[5]); // DOWN
+//glBegin(GL_QUADS);
+
+//    glTexCoord2d(1,0); glVertex3d(scaleValue+transX,0+transX,0);
+//    glTexCoord2d(1,1); glVertex3d(scaleValue+transX,scaleValue+transX,0);
+//    glTexCoord2d(0,1); glVertex3d(0+transX,scaleValue+transX,0);
+//    glTexCoord2d(0,0);  glVertex3d(0+transX,0+transX,0);
+//glEnd();
+
+glBindTexture(GL_TEXTURE_2D,cube_map_texture_ID[4]); // UP
+glBegin(GL_QUADS);
+
+    glTexCoord2d(0,0);glVertex3d(0+transX,0+transX,300);
+    glTexCoord2d(0,1);glVertex3d(scaleValue+transX,0+transX,300);
+    glTexCoord2d(1,1);glVertex3d(scaleValue+transX,scaleValue+transX,300);
+    glTexCoord2d(1,0);glVertex3d(0+transX,scaleValue+transX,300);
+glEnd();
+
+
+glPopMatrix();
 }
 
 void OpenGLWidget::conversionVecteursVersAngles() //transforme les coordonnÃ©es X,Y,Z en phi et theta
@@ -120,6 +226,9 @@ void OpenGLWidget::paintGL()
 
 
     basis->drawShape();
+
+    glEnable ( GL_TEXTURE_2D );
+    drawSkybox();
 
     // Rendu du modele
     g_model.m_update(0.05);

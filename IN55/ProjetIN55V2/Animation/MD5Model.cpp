@@ -539,14 +539,14 @@ void MD5Model::renderMesh( const Mesh& mesh )
 {
     glColor3f( 0.42f, 0.6f, 0.29f );
 
-    glPolygonMode(GL_FRONT, GL_LINE);
-    glPolygonMode(GL_BACK, GL_LINE);
+//    glPolygonMode(GL_FRONT, GL_LINE);
+//    glPolygonMode(GL_BACK, GL_LINE);
 
     glEnableClientState( GL_VERTEX_ARRAY );
     glEnableClientState( GL_TEXTURE_COORD_ARRAY );
     glEnableClientState( GL_NORMAL_ARRAY );
 
-  //  glBindTexture( GL_TEXTURE_2D, mesh.m_TexID );
+    glBindTexture( GL_TEXTURE_2D, mesh.m_TexID );
     glVertexPointer( 3, GL_FLOAT, 0, &(mesh.m_PositionBuffer[0]) );
     glNormalPointer( GL_FLOAT, 0, &(mesh.m_NormalBuffer[0]) );
     glTexCoordPointer( 2, GL_FLOAT, 0, &(mesh.m_Tex2DBuffer[0]) );
@@ -557,10 +557,10 @@ void MD5Model::renderMesh( const Mesh& mesh )
     glDisableClientState( GL_TEXTURE_COORD_ARRAY );
     glDisableClientState( GL_VERTEX_ARRAY );
 
-    glPolygonMode(GL_FRONT, GL_FILL);
-   glPolygonMode(GL_BACK, GL_FILL);
+//    glPolygonMode(GL_FRONT, GL_FILL);
+//   glPolygonMode(GL_BACK, GL_FILL);
 
-   // glBindTexture( GL_TEXTURE_2D, 0 );
+    glBindTexture( GL_TEXTURE_2D, 0 );
 }
 
 void MD5Model::renderNormals(  const Mesh& mesh )
