@@ -1,5 +1,7 @@
 #include "MainWindow.h"
 #include <QThread>
+#include <QPushButton>
+#include <QHBoxLayout>
 
 #define AVANCER 0
 #define RECULER 1
@@ -12,19 +14,13 @@ using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
-    QApplication::setOverrideCursor( QCursor( Qt::BlankCursor ));
-
     this->setWindowTitle("Projet IN55 - Animation");
 
-
-    resize(800,600);
     fullscreen = false;
 
     mouseTracked = true;
 
     anti_repetition = false;
-
-    QVector3D m_positionObjet;
 
     QVector3D m_orientationObjet;
 
@@ -34,26 +30,21 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     QVector3D m_positionCamera;
 
-
-    m_positionObjet.setX(29);
-    m_positionObjet.setY(16);
-    m_positionObjet.setZ(0);
+    m_positionCamera.setX(35);
+    m_positionCamera.setY(-91);
+    m_positionCamera.setZ(50);
 
     m_orientationObjet.setX(0);
     m_orientationObjet.setY(0);
     m_orientationObjet.setZ(0);
 
-    m_cibleCamera.setX(36);
-    m_cibleCamera.setY(26);
-    m_cibleCamera.setZ(4);
+    m_cibleCamera.setX(0);
+    m_cibleCamera.setY(0);
+    m_cibleCamera.setZ(0);
 
 
     //de même on crée la camera libre
-    cameraLibre = new CameraLibre(m_positionObjet, m_cibleCamera, m_orientationObjet,m_vitessecameraLibre, sensivity);
-
-    m_positionCamera = cameraLibre->getPosition();
-    m_positionCamera += QVector3D(0,0,5);//Pour mettre la camera à 5 au dessus du sol
-    m_cibleCamera = cameraLibre->getCibleCamera();
+    cameraLibre = new CameraLibre(m_positionCamera, m_cibleCamera, m_orientationObjet,m_vitessecameraLibre, sensivity);
 
     QDesktopWidget widget;
     mainScreenSize = widget.availableGeometry(widget.primaryScreen());
@@ -61,19 +52,105 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     cout << "+ Resolution de l'écran : " << mainScreenSize.width() << "x" << mainScreenSize.height() << endl;
     vuePrincipal = new OpenGLWidget (this, cameraLibre, m_positionCamera, m_cibleCamera);
 
-    setCentralWidget(vuePrincipal);
+    QWidget *panneauGlobal = new QWidget();
 
-    timerJeu = new QTimer(this);
-    connect(timerJeu, SIGNAL(timeout()), this, SLOT(cycleTimerJeu()));
+    QPushButton *boutonAnim = new QPushButton("Animation");
+    QPushButton *boutonAnimArret = new QPushButton("Arrêt");
+    QPushButton *boutonPause = new QPushButton("Pause");
+    QPushButton *boutonMonter = new QPushButton("Monter");
+    QPushButton *boutonDescendre = new QPushButton("Descendre");
+
+    connect(boutonAnim, SIGNAL (released()), this, SLOT (handleBoutonAnimation()));
+    connect(boutonAnimArret, SIGNAL (released()), this, SLOT (handleBoutonAnimationArret()));
+    connect(boutonPause, SIGNAL (released()), this, SLOT (handleBoutonPause()));
+    connect(boutonMonter, SIGNAL (pressed()), this, SLOT (handleBoutonMonter()));
+    connect(boutonDescendre, SIGNAL (pressed()), this, SLOT (handleBoutonDescendre()));
+    connect(boutonMonter, SIGNAL (released()), this, SLOT (handleBoutonStop()));
+    connect(boutonDescendre, SIGNAL (released()), this, SLOT (handleBoutonStop()));
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    QVBoxLayout *boutonLayout = new QVBoxLayout();
+
+    QWidget *panneauBoutons = new QWidget();
+
+    boutonLayout->addWidget(boutonAnim);
+    boutonLayout->addWidget(boutonAnimArret);
+    boutonLayout->addWidget(boutonPause);
+    boutonLayout->addWidget(boutonMonter);
+    boutonLayout->addWidget(boutonDescendre);
+
+    panneauBoutons->setLayout(boutonLayout);
+
+    QSizePolicy spLeft(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    spLeft.setHorizontalStretch(3);
+    vuePrincipal->setSizePolicy(spLeft);
+
+    QSizePolicy spRight(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    spRight.setHorizontalStretch(1);
+    boutonAnim->setSizePolicy(spRight);
+
+    layout->addWidget(vuePrincipal);
+    layout->addWidget(panneauBoutons);
+
+    panneauGlobal->setLayout(layout);
+
+
+    setCentralWidget(panneauGlobal);
+
+
+    timerApplication = new QTimer(this);
+    connect(timerApplication, SIGNAL(timeout()), this, SLOT(cycleTimer()));
 
     timerFPS = new QTimer(this);
 
     cout <<  "+ Chargement fenetre principale : OK" << endl;
     lancerApplication();
 
-    this->setMouseTracking(true);
-    vuePrincipal->setMouseTracking(true);
 }
+
+void MainWindow::handleBoutonAnimation()
+{
+    vuePrincipal->g_model.loadAnim("data/animations/monster.md5anim");
+    vuePrincipal->g_model.getAnimation().setContinuous(true);
+}
+
+void MainWindow::handleBoutonAnimationArret()
+{
+    vuePrincipal->g_model.clearAnimation();
+    vuePrincipal->g_model.setIsWalking(false);
+}
+
+void MainWindow::handleBoutonPause()
+{
+    if ( !enPause )
+    {
+        enPause = true;
+        stopperApplication();
+    }
+    else
+    {
+        enPause = false;
+        lancerApplication();
+    }
+}
+
+void MainWindow::handleBoutonMonter()
+{
+    cameraLibre->deplacement ( MONTER, true );
+}
+
+void MainWindow::handleBoutonDescendre()
+{
+    cameraLibre->deplacement ( DESCENDRE, true );
+}
+
+void MainWindow::handleBoutonStop()
+{
+    cameraLibre->deplacement(MONTER, false);
+    cameraLibre->deplacement(DESCENDRE, false);
+}
+
+
 
 MainWindow::~MainWindow()
 {
@@ -82,18 +159,18 @@ MainWindow::~MainWindow()
 
 void MainWindow::lancerApplication()
 {
-        timerJeu->start(20);
+        timerApplication->start(20);
         timerFPS->start(1000);
 }
 
 
 void MainWindow::stopperApplication()
 {
-        timerJeu->stop();
+        timerApplication->stop();
         timerFPS->stop();
 }
 
-void MainWindow::cycleTimerJeu()
+void MainWindow::cycleTimer()
 {
     numCycle++;
     cameraLibre->Animate();
@@ -140,7 +217,7 @@ void MainWindow::wheelEvent ( QWheelEvent *event )
         }
         cameraLibre->setVitesse(m_vitessecameraLibre);
     }
-    qDebug() << "Speed =" << m_vitessecameraLibre;
+    qDebug() << "Vitesse =" << m_vitessecameraLibre;
 }
 
 
@@ -179,7 +256,7 @@ void MainWindow::keyPressEvent ( QKeyEvent *event )
             cameraLibre->deplacement ( DROITE, true );
             break;
         case Qt::Key_Control:
-            qDebug() << "Descendre";
+           // qDebug() << "Descendre";
             cameraLibre->deplacement ( DESCENDRE, true );
             break;
         case Qt::Key_Space:
@@ -203,21 +280,11 @@ void MainWindow::keyPressEvent ( QKeyEvent *event )
                 qDebug() << "+ Full screen";
             }
             break;
-        case Qt::Key_F2:
-                mouseTracked = !mouseTracked;
-                this->setMouseTracking(mouseTracked);
-                vuePrincipal->setMouseTracking(mouseTracked);
-                if(!mouseTracked)
-                    QApplication::setOverrideCursor( QCursor());
-                else
-                    QApplication::setOverrideCursor( QCursor( Qt::BlankCursor ));
-            break;
-
-
 
         case Qt::Key_N:
         {
-            if(!event->isAutoRepeat()){
+            if(!event->isAutoRepeat())
+            {
                 vuePrincipal->g_model.loadAnim("Meshs/boarman/doom.md5anim");
                 vuePrincipal->g_model.getAnimation().setContinuous(true);
             }

@@ -7,8 +7,6 @@
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-private slots:
-    void cycleTimerJeu();
 
 public:
     MainWindow(QWidget *parent = 0);
@@ -16,6 +14,8 @@ public:
 
     void lancerApplication();
     void stopperApplication();
+
+
 
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
@@ -30,9 +30,7 @@ public:
     OpenGLWidget *vuePrincipal;
     CameraLibre *cameraLibre;
 
-
-
-    QTimer *timerJeu;
+    QTimer *timerApplication;
     QTimer *timerFPS;
 
     bool anti_repetition;
@@ -40,6 +38,15 @@ public:
     bool mouseTracked;
 
     QPoint oldPosSouris;
+
+    private slots:
+        void handleBoutonAnimation();
+        void handleBoutonAnimationArret();
+        void handleBoutonPause();
+        void handleBoutonMonter();
+        void handleBoutonDescendre();
+        void handleBoutonStop();
+        void cycleTimer();
 
 
 };

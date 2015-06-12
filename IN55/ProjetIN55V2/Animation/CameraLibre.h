@@ -14,7 +14,7 @@ class CameraLibre
                 CameraLibre(QVector3D position, QVector3D cibleCamera, QVector3D orientation, float vitessecameraLibre = 0, float sensivite = 0);
 
                 //fonction la plus utilisée, elle est appelée a  chaque fois que l'on rafraichit l'image (pour deplacer la camera par exemple)
-                void Animate ();
+                void Animate();
 
                 void mouvementCameraSouris (int new_x, int new_y);
                 void deplacement (int numDirection, bool valeur);

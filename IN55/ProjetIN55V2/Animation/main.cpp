@@ -8,6 +8,7 @@ int main(int argc, char *argv[])
     qApp->processEvents();
 
     MainWindow w;
+    w.setGeometry(30,30,800,600);
     w.show();
 
     return a.exec();

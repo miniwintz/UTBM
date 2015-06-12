@@ -83,7 +83,7 @@ void MD5Model::m_update( float fDeltaTime )
 {
     if ( m_bHasAnimation )
     {
-        qDebug() << "md5model m_update hasanim";
+       // qDebug() << "md5model m_update hasanim";
         m_Animation.m_update(fDeltaTime);
         if(m_isWalking)
         {
@@ -148,7 +148,7 @@ GLuint MD5Model::loadTexture ( string filename, bool useMipMap)
         glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR ); //ajout seulement d'un filtre lineaire
         glTexImage2D ( GL_TEXTURE_2D, 0, 3, interTexture.width(), interTexture.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, interTexture.bits() );
     }
-    qDebug() << "-----> Chargement texture taille" << interTexture.width() << interTexture.height() <<  interTexture.bits();
+    //qDebug() << "-----> Chargement texture taille" << interTexture.width() << interTexture.height() <<  interTexture.bits();
     return finalTexture; //on renvoie la texture
 
 }
@@ -520,7 +520,7 @@ bool MD5Model::prepareNormals( Mesh& mesh )
 void MD5Model::render()
 {
     glPushMatrix();
-      glTranslated ( m_Position.x(), m_Position.y(), m_Position.z());
+      //glTranslated ( m_Position.x(), m_Position.y(), m_Position.z());
       glMultMatrixf( m_LocalToWorldMatrix.data() );
 
       // Render the meshes

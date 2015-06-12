@@ -82,29 +82,32 @@ public:
 
     bool loadModel( const std::string& filename );
     bool loadAnim( const std::string& filename );
+
     void clearAnimation();
     void m_update( float fDeltaTime );
     void render();
-
     void m_update();
-    int getIndexJointByName(const std::string& name);
     void computeQuatW(QQuaternion& quat);
     void removeQuotes(std::string& str );
-    int getFileLength( std::istream& file );
     void ignoreLine( std::istream& file, int length );
-    GLuint loadTexture(std::string file, bool mipmap);
-    MeshList getMeshList();
-    JointList getJointList();
     void setJointList(JointList& joints);
     void setJoint(Joint joint, int index);
     void resizeSkelton(int);
-    JointList getRestPosition();
     void setIsWalking(bool b);
     void setPosition( QVector3D m_position);
     void translation( double coeff);
+
+    int getIndexJointByName(const std::string& name);
+    int getFileLength( std::istream& file );
+
+    JointList getJointList();
+    JointList getRestPosition();
+
+    GLuint loadTexture(std::string file, bool mipmap);
+
+    MeshList getMeshList();
+
     MD5Animation& getAnimation();
-
-
 
 
 protected:
