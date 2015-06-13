@@ -46,7 +46,7 @@ public:
         QVector3D         m_Pos;
         QQuaternion     m_Orient;
 
-        void operator=(const Joint& j){
+        void operator=(const Joint& j) {
             m_Name = j.m_Name;
             m_Orient = j.m_Orient;
             m_ParentID = j.m_ParentID;
@@ -126,8 +126,8 @@ protected:
     // Draw the skeleton of the mesh for debugging purposes.
     void renderSkeleton(const JointList& joints , std::string jointName);
 
-     bool CheckAnimation( const MD5Animation& animation ) const;
-     void afficheSkelton(MD5Model::JointList& jl);
+    bool CheckAnimation( const MD5Animation& animation ) const;
+    void afficheSkelton(MD5Model::JointList& jl);
 
 
 

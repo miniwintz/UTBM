@@ -81,7 +81,7 @@ public:
     {
         SkeletonJoint()
             : m_Parent(-1)
-            , m_Pos(0,0,0)
+            , m_Pos(0, 0, 0)
         {}
 
         SkeletonJoint( const BaseFrame& copy )
@@ -135,9 +135,9 @@ protected:
 
 private:
     int m_iMD5Version;
-    int m_iNumFrames;
-    int m_iNumJoints;
-    int m_iFramRate;
+    unsigned int m_iNumFrames;
+    unsigned int m_iNumJoints;
+    unsigned int m_iFramRate;
     int m_iNumAnimatedComponents;
 
     float m_fAnimDuration;

@@ -14,9 +14,6 @@ public:
 
     void lancerApplication();
     void stopperApplication();
-
-
-
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
     void keyPressEvent(QKeyEvent *event);
@@ -39,14 +36,14 @@ public:
 
     QPoint oldPosSouris;
 
-    private slots:
-        void handleBoutonAnimation();
-        void handleBoutonAnimationArret();
-        void handleBoutonPause();
-        void handleBoutonMonter();
-        void handleBoutonDescendre();
-        void handleBoutonStop();
-        void cycleTimer();
+private slots:
+    void handleBoutonAnimation();
+    void handleBoutonAnimationArret();
+    void handleBoutonPause();
+    void handleBoutonMonter();
+    void handleBoutonDescendre();
+    void handleBoutonStop();
+    void cycleTimer();
 
 
 };

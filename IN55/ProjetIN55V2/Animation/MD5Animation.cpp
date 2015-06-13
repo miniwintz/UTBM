@@ -3,6 +3,8 @@
 
 using namespace std;
 
+/////////////////////////////// PUBLIC ///////////////////////////////////////
+
 MD5Animation::MD5Animation()
     : m_iMD5Version( 0 )
     , m_iNumFrames( 0 )
@@ -11,7 +13,7 @@ MD5Animation::MD5Animation()
     , m_iNumAnimatedComponents( 0 )
     , m_fAnimDuration( 0 )
     , m_fFrameDuration( 0 )
-    ,m_continuous(false)
+    , m_continuous(false)
     , m_fAnimTime( 0 )
 {
 
@@ -21,7 +23,7 @@ MD5Animation::~MD5Animation()
 {}
 
 
-void MD5Animation::clearAnimation(){
+void MD5Animation::clearAnimation() {
     m_JointInfos.clear();
     m_Bounds.clear();
     m_BaseFrames.clear();
@@ -40,7 +42,7 @@ bool MD5Animation::loadAnimation( const std::string& filename )
 {
     ifstream file;
 
-    file.open(filename.c_str(),ios::in);
+    file.open(filename.c_str(), ios::in);
 
     if ( file.fail() )
     {
@@ -63,12 +65,12 @@ bool MD5Animation::loadAnimation( const std::string& filename )
     m_BaseFrames.clear();
     m_Frames.clear();
     m_AnimatedSkeleton.m_Joints.clear();
-     m_Skeletons.clear();
+    m_Skeletons.clear();
     m_iNumFrames = 0;
 
     file >> param;
 
-    while( !file.eof() )
+    while ( !file.eof() )
     {
         if ( param == "MD5Version" )
         {
@@ -121,16 +123,16 @@ bool MD5Animation::loadAnimation( const std::string& filename )
             for ( int i = 0; i < m_iNumFrames; ++i )
             {
                 Bound bound;
-                float tempX,tempY,tempZ;
-                float tempX2,tempY2,tempZ2;
+                float tempX, tempY, tempZ;
+                float tempX2, tempY2, tempZ2;
 
                 file >> junk; // read in the '(' character
                 file >> tempX >> tempY >> tempZ;
                 file >> junk >> junk; // read in the ')' and '(' characters.
                 file >> tempX2 >> tempY2 >> tempZ2;
 
-                bound.m_Min = QVector3D(tempX,tempY,tempZ);
-                bound.m_Max = QVector3D(tempX2,tempY2,tempZ2);
+                bound.m_Min = QVector3D(tempX, tempY, tempZ);
+                bound.m_Max = QVector3D(tempX2, tempY2, tempZ2);
 
                 m_Bounds.push_back(bound);
 
@@ -147,8 +149,8 @@ bool MD5Animation::loadAnimation( const std::string& filename )
 
             for ( int i = 0; i < m_iNumJoints; ++i )
             {
-                float tempX,tempY,tempZ;
-                float tempvecX,tempvecY,tempvecZ;
+                float tempX, tempY, tempZ;
+                float tempvecX, tempvecY, tempvecZ;
                 BaseFrame baseFrame;
                 file >> junk;
                 file >> tempvecX >> tempvecY >> tempvecZ;
@@ -156,8 +158,8 @@ bool MD5Animation::loadAnimation( const std::string& filename )
                 file >> tempX >> tempY >> tempZ;
                 file.ignore( fileLength, '\n' );
 
-                baseFrame.m_Orient.setVector(tempX,tempY,tempZ);
-                baseFrame.m_Pos = QVector3D(tempvecX,tempvecY,tempvecZ);
+                baseFrame.m_Orient.setVector(tempX, tempY, tempZ);
+                baseFrame.m_Pos = QVector3D(tempvecX, tempvecY, tempvecZ);
 
                 m_BaseFrames.push_back(baseFrame);
             }
@@ -210,7 +212,7 @@ void MD5Animation::removeQuotes(string& str )
 {
     size_t n;
     while ( ( n = str.find('\"') ) != string::npos )
-        str.erase(n,1);
+        str.erase(n, 1);
 }
 
 int MD5Animation::getFileLength( std::istream& file )
@@ -313,7 +315,7 @@ void MD5Animation::m_update( float fDeltaTime )
     float fInterpolate = fmodf( m_fAnimTime, m_fFrameDuration ) / m_fFrameDuration;
 
     interpolateSkeletons( m_AnimatedSkeleton, m_Skeletons[iFrame0], m_Skeletons[iFrame1], fInterpolate );
-    if(iFrame1<iFrame0 && !m_continuous){
+    if (iFrame1 < iFrame0 && !m_continuous) {
         clearAnimation();
     }
 }
@@ -327,7 +329,7 @@ void MD5Animation::interpolateSkeletons( FrameSkeleton& finalSkeleton, const Fra
         const SkeletonJoint& joint1 = skeleton1.m_Joints[i];
 
         finalJoint.m_Parent = joint0.m_Parent;
-        finalJoint.m_Pos = QQuaternion::slerp( QQuaternion(0,joint0.m_Pos), QQuaternion(0,joint1.m_Pos), fInterpolate ).vector();
+        finalJoint.m_Pos = QQuaternion::slerp( QQuaternion(0, joint0.m_Pos), QQuaternion(0, joint1.m_Pos), fInterpolate ).vector();
         finalJoint.m_Orient = QQuaternion::slerp( joint0.m_Orient, joint1.m_Orient, fInterpolate );
     }
 }
@@ -349,7 +351,7 @@ void MD5Animation::render()
     {
         for ( unsigned int i = 0; i < joints.size(); ++i )
         {
-            glVertex3f( joints[i].m_Pos.x(),joints[i].m_Pos.y(),joints[i].m_Pos.z() );
+            glVertex3f( joints[i].m_Pos.x(), joints[i].m_Pos.y(), joints[i].m_Pos.z() );
         }
     }
     glEnd();
@@ -364,8 +366,8 @@ void MD5Animation::render()
             if ( j0.m_Parent != -1 )
             {
                 const SkeletonJoint& j1 = joints[j0.m_Parent];
-                glVertex3f( j0.m_Pos.x(),j0.m_Pos.y(),j0.m_Pos.z() );
-                glVertex3f( j1.m_Pos.x(),j1.m_Pos.y(),j1.m_Pos.z() );
+                glVertex3f( j0.m_Pos.x(), j0.m_Pos.y(), j0.m_Pos.z() );
+                glVertex3f( j1.m_Pos.x(), j1.m_Pos.y(), j1.m_Pos.z() );
             }
         }
     }

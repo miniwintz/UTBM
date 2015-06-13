@@ -6,35 +6,37 @@
 
 class OpenGLWidget : public QGLWidget
 {
-    public:
+public:
 
-        OpenGLWidget (QWidget *parent, CameraLibre *cameraLibre, QVector3D positionCamera, QVector3D targetCamera);
+    OpenGLWidget (QWidget *parent, CameraLibre *cameraLibre, QVector3D positionCamera, QVector3D targetCamera);
 
-        void loadSkybox();
-        void drawSkybox();
-        void initializeGL(); //initialisation des paramtres opengl, du fog, des textures,...
-        void resizeGL ( int width, int height ); //est appele quand on cree le widget
-        void paintGL(); //appelle apres lors des m_updateGL (quand on veut rafraichir)
-        void conversionVecteursVersAngles();
+    void loadSkybox();
+    void drawSkybox();
+    void initializeGL(); //initialisation des paramtres opengl, du fog, des textures,...
+    void resizeGL ( int width, int height ); //est appele quand on cree le widget
+    void paintGL(); //appelle apres lors des m_updateGL (quand on veut rafraichir)
+    void conversionVecteursVersAngles();
 
-        GLuint loadTexture ( QString filename, bool useMipMap); //chargement des textures
+    GLuint loadTexture ( QString filename, bool useMipMap); //chargement des textures
 
-        MD5Model g_model;
+    MD5Model g_model;
 
 private:
-       GLuint cube_map_texture_ID[6];
+    GLuint cube_map_texture_ID[6];
 
-        QVector3D m_positionCamera;
-        QVector3D m_cibleCamera;
-        QVector3D m_positioncameraLibre; //variables temporaires de calcul, utilisÃ© seulement pour calculer la cible visÃ© par la camera (fonction conversionVecteursVersAngles()...)
-        QVector3D targetcameraLibre;
+    QVector3D m_positionCamera;
+    QVector3D m_cibleCamera;
 
-        float theta;
-        float phi;
+    //variables temporaires de calcul, utilisé seulement pour calculer la cible visée par la camera (fonction conversionVecteursVersAngles()...)
+    QVector3D m_positioncameraLibre;
+    QVector3D m_targetcameraLibre;
 
-        CameraLibre *p_cameraLibre;
+    float m_theta;
+    float m_phi;
 
-        Basis *basis;
+    CameraLibre *p_cameraLibre;
+
+    Basis *p_basis;
 };
 
 

@@ -15,12 +15,12 @@ QT       += opengl
 QT       += widgets multimedia
 
 SOURCES += ../Common/Shapes/Basis.cpp \
-    main.cpp\
     MainWindow.cpp \
     OpenGLWidget.cpp \
     CameraLibre.cpp \
     MD5Model.cpp \
-    MD5Animation.cpp
+    MD5Animation.cpp \
+    main.cpp
 
 
 HEADERS  += ../Common/Shapes/Basis.h \

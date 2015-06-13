@@ -8,7 +8,12 @@ int main(int argc, char *argv[])
     qApp->processEvents();
 
     MainWindow w;
-    w.setGeometry(30,30,800,600);
+
+    QDesktopWidget widget;
+    QRect mainScreenSize = widget.availableGeometry(widget.primaryScreen());
+
+
+    w.setGeometry(30, 30, (float)(mainScreenSize.width()) / 1.5, (float)(mainScreenSize.height()) / 1.5);
     w.show();
 
     return a.exec();
