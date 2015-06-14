@@ -1,5 +1,9 @@
 package test;
 
+import java.util.ArrayList;
+
+import javax.vecmath.Point2d;
+
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
@@ -8,29 +12,71 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
+
+import fr.utbm.set.gis.io.shape.GISShapeFileReader;
+import fr.utbm.set.gis.mapelement.MapElement;
+import fr.utbm.set.gis.mapelement.MapPolyline;
 
 public class MainWindow
 {
 
-    protected Shell shell;
-
+    protected Shell shlNavigator;
+    protected GISShapeFileReader reader;
+    
+    protected ArrayList<int[]> polylines;
+    
+    final static double minX = 931435.0;
+	final static double maxX = 961397.6;
+	final static double minY = 2280558.5;
+	final static double maxY = 2323666.5;
+	
+	
+    
+    
     /**
-     * Launch the application.
-     * @param args
+     * Editor's entry point for previewing
+     * @wbp.parser.entryPoint
      */
-    public static void main(String[] args)
-    {
-        try
-        {
-            MainWindow window = new MainWindow();
-            window.open();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+    @SuppressWarnings("unused")
+	private static void init() {
+    	MainWindow window = new MainWindow(null);
+		window.open();
+    }
+
+    public MainWindow(GISShapeFileReader rdr) {
+    	reader = rdr;
+    	
+    	double scaling = Math.max((maxX - minX) / 1024, (maxY - minY) / 768);
+    	polylines = new ArrayList<int[]>();
+		
+    	// Read ShapeFile 
+		for(MapElement elt : reader) {
+			// Cast current element to polyline
+			MapPolyline mpl = (MapPolyline)elt;
+			int pointCount = mpl.getPointCount();
+			
+			// myPos = {x1,y1,x2,y2,...} coordinates of polyline's points in pixels
+			int[] polyline = new int[pointCount*2];
+			
+			// iterate over the polyline's points to generate pixel coordinates
+			// to be able to draw them later (see line 157) 
+			for(int i = 0; i < pointCount; i++) {
+				Point2d p2d = mpl.getPointAt(i);
+				
+				polyline[i*2] = (int)((p2d.x - minX)/scaling);
+				polyline[i*2+1] = (int)((-p2d.y + maxY)/scaling);
+			}
+			
+			polylines.add(polyline);
+		}
     }
 
     /**
@@ -40,9 +86,9 @@ public class MainWindow
     {
         Display display = Display.getDefault();
         createContents();
-        shell.open();
-        shell.layout();
-        while (!shell.isDisposed())
+        shlNavigator.open();
+        shlNavigator.layout();
+        while (!shlNavigator.isDisposed())
         {
             if (!display.readAndDispatch())
             {
@@ -56,68 +102,83 @@ public class MainWindow
      */
     protected void createContents()
     {
-        shell = new Shell();
-        shell.setSize(982, 511);
-        shell.setText("SWT Application");
-        
-        CTabFolder tabFolder = new CTabFolder(shell, SWT.BORDER);
-        tabFolder.setBounds(0, 0, 980, 484);
+        shlNavigator = new Shell();
+        shlNavigator.setMinimumSize(new Point(1032, 800));
+        shlNavigator.setSize(982, 511);
+        shlNavigator.setText("Navigator");
+                
+        CTabFolder tabFolder = new CTabFolder(shlNavigator, SWT.BORDER);
+        tabFolder.setBounds(0, 0, 1024, 768);
         tabFolder.setSelectionBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
         
-        CTabItem tabItem = new CTabItem(tabFolder, SWT.NONE);
-        tabItem.setText("New Item");
+        CTabItem mapTab = new CTabItem(tabFolder, SWT.NONE);
+        mapTab.setText("Carte");
         
-        Canvas canvas = new Canvas(tabFolder, SWT.NONE);
-        tabItem.setControl(canvas);
+        Composite mapTabComposite = new Composite(tabFolder, SWT.NONE);
+        mapTab.setControl(mapTabComposite);
         
-        Canvas canvas_1 = new Canvas(canvas, SWT.NONE);
-        canvas_1.setBounds(793, 0, 181, 457);
+        Button btnUp = new Button(mapTabComposite, SWT.NONE);
+        btnUp.setLocation(930, 5);
+        btnUp.setSize(40, 40);
+        btnUp.setText("▲");
         
-        Button btnHaut = new Button(canvas_1, SWT.NONE);
-        btnHaut.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) 
-            {
-            }
-        });
-        btnHaut.setBounds(48, 22, 77, 31);
-        btnHaut.setText("haut");
+        Button btnDown = new Button(mapTabComposite, SWT.NONE);
+        btnDown.setLocation(930, 85);
+        btnDown.setSize(40, 40);
+        btnDown.setText("▼");
         
-        Button btnBas = new Button(canvas_1, SWT.NONE);
-        btnBas.setBounds(48, 96, 77, 31);
-        btnBas.setText("bas");
+        Button btnLeft = new Button(mapTabComposite, SWT.NONE);
+        btnLeft.setBounds(890, 45, 40, 40);
+        btnLeft.setText("◀");
         
-        Button btnGauche = new Button(canvas_1, SWT.NONE);
-        btnGauche.setBounds(11, 59, 77, 31);
-        btnGauche.setText("gauche");
+        Button btnRight = new Button(mapTabComposite, SWT.NONE);
+        btnRight.setBounds(970, 45, 40, 40);
+        btnRight.setText("▶");
         
-        Button btnDroite = new Button(canvas_1, SWT.NONE);
-        btnDroite.setBounds(94, 59, 77, 31);
-        btnDroite.setText("droite");
+        Button btnCenter = new Button(mapTabComposite, SWT.NONE);
+        btnCenter.setBounds(930, 45, 40, 40);
+        btnCenter.setText("O");
         
-        Button button = new Button(canvas_1, SWT.NONE);
-        button.setBounds(48, 148, 77, 31);
-        button.setText("+");
+        Button btnZoomIn = new Button(mapTabComposite, SWT.NONE);
+        btnZoomIn.setBounds(930, 135, 40, 40);
+        btnZoomIn.setText("+");
         
-        Button button_1 = new Button(canvas_1, SWT.NONE);
-        button_1.setBounds(48, 185, 77, 31);
-        button_1.setText("-");
+        Button btnZoomOut = new Button(mapTabComposite, SWT.NONE);
+        btnZoomOut.setBounds(930, 175, 40, 40);
+        btnZoomOut.setText("-");
         
-        Canvas canvas_2 = new Canvas(canvas, SWT.NONE);
-        canvas_2.setBounds(0, 0, 787, 457);
+        Canvas mapCanvas = new Canvas(mapTabComposite, SWT.BORDER);
+        mapCanvas.setSize(1017, 740);
         
-        CTabItem tabItem_1 = new CTabItem(tabFolder, SWT.NONE);
-        tabItem_1.setText("New Item");
         
-        Canvas canvas_3 = new Canvas(tabFolder, SWT.NONE);
-        tabItem_1.setControl(canvas_3);
+        mapCanvas.addPaintListener(new PaintListener() {
+			/**
+			 * Paint inside the canvas
+			 */
+			@Override
+			public void paintControl(PaintEvent e) {
+				GC gc = e.gc;
+				long time = System.currentTimeMillis();
+				
+				//iterate over polylines' sets of coordinates
+				for(int[] polyline : polylines) {
+					// draw the polyline
+					gc.drawPolyline(polyline);
+				}
+				time = System.currentTimeMillis() - time;
+				System.out.println("Took " + time + " ms");
+			}
+		});
         
-        Canvas canvas_4 = new Canvas(canvas_3, SWT.NONE);
-        canvas_4.setBounds(0, 0, 974, 457);
+        CTabItem settingsTab = new CTabItem(tabFolder, SWT.NONE);
+        settingsTab.setText("Paramètres");
         
-        Button btnAfficherTrace = new Button(canvas_4, SWT.CHECK);
-        btnAfficherTrace.setBounds(27, 23, 98, 22);
-        btnAfficherTrace.setText("Afficher trace");
-
+        Composite settingsTabComposite = new Composite(tabFolder, SWT.NONE);
+        settingsTab.setControl(settingsTabComposite);
+        
+        Button button = new Button(settingsTabComposite, SWT.CHECK);
+        button.setText("Afficher trace");
+        button.setBounds(0, 0, 1018, 741);
+        
     }
 }
