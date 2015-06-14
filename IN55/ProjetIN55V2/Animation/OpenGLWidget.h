@@ -31,8 +31,8 @@ private:
     QVector3D m_positioncameraLibre;
     QVector3D m_targetcameraLibre;
 
-    float m_theta;
-    float m_phi;
+    float theta;
+    float phi;
 
     CameraLibre *p_cameraLibre;
 

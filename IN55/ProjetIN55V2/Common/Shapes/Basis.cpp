@@ -48,6 +48,7 @@ Basis::drawShape()
   // X : rouge
   // Y : vert
   // Z : bleu
+  glDisable(GL_LIGHTING);
 
     glEnableClientState( GL_VERTEX_ARRAY );
      glEnableClientState( GL_COLOR_ARRAY );
@@ -58,6 +59,6 @@ Basis::drawShape()
 glDisableClientState( GL_COLOR_ARRAY );
     glDisableClientState( GL_VERTEX_ARRAY );
 
-
+  glEnable(GL_LIGHTING);
 
 }

@@ -20,11 +20,12 @@ public:
     void keyReleaseEvent ( QKeyEvent * event );
 
     bool enPause;
+    bool hasMoved;
     int numCycle;
 
     QRect mainScreenSize;
 
-    OpenGLWidget *vuePrincipal;
+    OpenGLWidget *renderWidget;
     CameraLibre *cameraLibre;
 
     QTimer *timerApplication;

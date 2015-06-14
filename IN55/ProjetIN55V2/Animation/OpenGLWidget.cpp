@@ -6,7 +6,11 @@ using namespace std;
 
 OpenGLWidget::OpenGLWidget ( QWidget *parent, CameraLibre *cameraLibre, QVector3D positionCamera, QVector3D targetCamera) : QGLWidget ( parent ) //le ": QGLWidget (parent) sert a appeler le constructeur de parent(obligatoire)
 {
-    resize(800, 600);
+  QDesktopWidget widget;
+  QRect mainScreenSize = widget.availableGeometry(widget.primaryScreen());
+
+    resize(mainScreenSize.width(), mainScreenSize.height());
+
 
     p_cameraLibre = cameraLibre;
 
@@ -29,25 +33,24 @@ void OpenGLWidget::initializeGL()
     /////////////////////Eclairage/////////////////////////////////////
     float ambientColor[4] = {0.7f, 0.7f, 0.7f, 1.0f};
 
-    glLightModelf(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
 
-    float global_ambient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    float global_ambient[] = { 0.65f, 0.65f, 0.65f, 1.0f };
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
 
     glEnable(GL_DEPTH_TEST);    // Active le test de profondeur
     glEnable(GL_LIGHTING);          // Active l'éclairage
     glEnable(GL_LIGHT0);            // Active light0
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambientColor);
-    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION , 0.1f);
+    //glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION , 0.1f);
 
     /*config reflection lumière sur les matériaux*/
-    //  float qaGreen[] = {0.0,1.0,0.0,1.0};
     float qaWhite[] = {1.0, 1.0, 1.0, 1.0};
     float qaGrey[] = {0.85, 0.85, 0.85, 1.0};
 
     glMaterialfv(GL_FRONT, GL_DIFFUSE, qaGrey);
     glMaterialfv(GL_FRONT, GL_SPECULAR, qaWhite);
-    glMaterialf(GL_FRONT, GL_SHININESS, 60.0);
+    glMaterialf(GL_FRONT, GL_SHININESS, 70.0);
     /*fin config lum*/
 
     g_model.loadModel( "data/meshes/monster.md5mesh" );
@@ -180,17 +183,17 @@ void OpenGLWidget::conversionVecteursVersAngles() //transforme les coordonnees X
     QVector3D m_forward(m_targetcameraLibre.x() - (m_positioncameraLibre.x() + 1), m_targetcameraLibre.y() - (m_positioncameraLibre.y() + 1), m_targetcameraLibre.z() - (m_positioncameraLibre.z() + 6));
 
     float r = sqrt(pow(m_forward.x(), 2) + pow(m_forward.y(), 2) + pow(m_forward.z(), 2));
-    m_phi = ( acos(m_forward.z() / r)  * 180 / M_PI);
+    phi = ( acos(m_forward.z() / r)  * 180 / M_PI);
 
     float r_temp = sqrt(pow(m_forward.x(), 2) + pow(m_forward.y(), 2));
 
     if (m_forward.y() >= 0)
     {
-        m_theta = ( (acos(m_forward.x() / r_temp)) * 180 / M_PI);
+        theta = ( (acos(m_forward.x() / r_temp)) * 180 / M_PI);
     }
     else
     {
-        m_theta = - (  (acos(m_forward.x() / r_temp)) * 180 / M_PI);
+        theta = - (  (acos(m_forward.x() / r_temp)) * 180 / M_PI);
     }
 }
 

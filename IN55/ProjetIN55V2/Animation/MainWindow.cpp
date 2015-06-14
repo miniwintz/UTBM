@@ -16,45 +16,49 @@ using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
+
     this->setWindowTitle("Projet IN55 - Animation");
 
     fullscreen = false;
+    hasMoved = false;
 
     mouseTracked = true;
 
     anti_repetition = false;
 
-    QVector3D m_orientationObjet;
+    QVector3D orientation;
 
-    QVector3D m_cibleCamera;
-    float m_vitessecameraLibre = 0.25;
+    QVector3D cibleCamera;
+    float vitesseCameraLibre = 0.25;
     float sensivity = 0.1;
 
-    QVector3D m_positionCamera;
+    QVector3D positionCamera;
 
-    m_positionCamera.setX(2.78839 );
-    m_positionCamera.setY(-180.552);
-    m_positionCamera.setZ(70);
+    positionCamera.setX(2.78839 );
+    positionCamera.setY(-180.552);
+    positionCamera.setZ(70);
 
-    m_orientationObjet.setX(0);
-    m_orientationObjet.setY(0);
-    m_orientationObjet.setZ(0);
+    orientation.setX(0);
+    orientation.setY(0);
+    orientation.setZ(0);
 
-    m_cibleCamera.setX(0);
-    m_cibleCamera.setY(0);
-    m_cibleCamera.setZ(0);
+    cibleCamera.setX(0);
+    cibleCamera.setY(0);
+    cibleCamera.setZ(50);
 
 
     //de même on crée la camera libre
-    cameraLibre = new CameraLibre(m_positionCamera, m_cibleCamera, m_orientationObjet, m_vitessecameraLibre, sensivity);
+    cameraLibre = new CameraLibre(positionCamera, cibleCamera, orientation, vitesseCameraLibre, sensivity, hasMoved);
 
     QDesktopWidget widget;
     mainScreenSize = widget.availableGeometry(widget.primaryScreen());
 
+    cibleCamera = cameraLibre->getCibleCamera();
+
 
     ////////////////////CREATION DE LA GUI///////////////////////////////////////////
 
-    vuePrincipal = new OpenGLWidget (this, cameraLibre, m_positionCamera, m_cibleCamera);
+    renderWidget = new OpenGLWidget (this, cameraLibre, positionCamera, cibleCamera);
 
     QWidget *panneauGlobal = new QWidget();
 
@@ -90,13 +94,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     QSizePolicy spLeft(QSizePolicy::Preferred, QSizePolicy::Preferred);
     spLeft.setHorizontalStretch(3);
-    vuePrincipal->setSizePolicy(spLeft);
+    renderWidget->setSizePolicy(spLeft);
 
     QSizePolicy spRight(QSizePolicy::Preferred, QSizePolicy::Preferred);
     spRight.setHorizontalStretch(1);
     boutonAnim->setSizePolicy(spRight);
 
-    layout->addWidget(vuePrincipal);
+    layout->addWidget(renderWidget);
     layout->addWidget(panneauBoutons);
 
     panneauGlobal->setLayout(layout);
@@ -112,18 +116,22 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     lancerApplication();
 
+   // this->setMouseTracking(true);
+        renderWidget->setMouseTracking(true);
+
+
 }
 
 void MainWindow::handleBoutonAnimation()
 {
-    vuePrincipal->g_model.loadAnim("data/animations/monster.md5anim");
-    vuePrincipal->g_model.getAnimation().setContinuous(true);
+    renderWidget->g_model.loadAnim("data/animations/monster.md5anim");
+    renderWidget->g_model.getAnimation().setContinuous(true);
 }
 
 void MainWindow::handleBoutonAnimationArret()
 {
-    vuePrincipal->g_model.clearAnimation();
-    vuePrincipal->g_model.setIsWalking(false);
+    renderWidget->g_model.clearAnimation();
+    renderWidget->g_model.setIsWalking(false);
 }
 
 void MainWindow::handleBoutonPause()
@@ -181,18 +189,20 @@ void MainWindow::cycleTimer()
     numCycle++;
     cameraLibre->Animate();
 
-    vuePrincipal->updateGL();
+    renderWidget->updateGL();
 }
 
 void MainWindow::mouseMoveEvent ( QMouseEvent *event )
 {
+  cameraLibre->hasMoved = true;
+
     if (!anti_repetition)//on verifie que ce n'est pas la fonction qui se rappelle elle meme (avec setPos) et que la souris est sur le bon widget
     {
-        int xrel = (width() / 2 - event->x());
-        int yrel = ( height() / 2 - event->y());
+        float xrel = (renderWidget->width() / 2 - event->x());
+        float yrel = ( renderWidget->height() / 2 - event->y());
 
         cameraLibre->mouvementCameraSouris ( xrel, yrel );
-        QPoint pos(width() / 2, height() / 2);
+        QPoint pos(renderWidget->width() / 2, renderWidget->height() / 2);
         QCursor::setPos(mapToGlobal(pos));
 
         anti_repetition = true;
@@ -207,23 +217,23 @@ void MainWindow::mouseMoveEvent ( QMouseEvent *event )
 
 void MainWindow::wheelEvent ( QWheelEvent *event )
 {
-    float m_vitessecameraLibre = cameraLibre->getVitesse();
+    float vitesseCameraLibre = cameraLibre->getVitesse();
 
     if ( event->delta() >= 0 )
     {
-        m_vitessecameraLibre += 0.5;
-        cameraLibre->setVitesse(m_vitessecameraLibre);
+        vitesseCameraLibre += 0.5;
+        cameraLibre->setVitesse(vitesseCameraLibre);
     }
     else
     {
-        m_vitessecameraLibre -= 0.1;
-        if (m_vitessecameraLibre < 0)
+        vitesseCameraLibre -= 0.1;
+        if (vitesseCameraLibre < 0)
         {
-            m_vitessecameraLibre = 0;
+            vitesseCameraLibre = 0;
         }
-        cameraLibre->setVitesse(m_vitessecameraLibre);
+        cameraLibre->setVitesse(vitesseCameraLibre);
     }
-    qDebug() << "Vitesse =" << m_vitessecameraLibre;
+    qDebug() << "Vitesse =" << vitesseCameraLibre;
 }
 
 
@@ -286,13 +296,22 @@ void MainWindow::keyPressEvent ( QKeyEvent *event )
             qDebug() << "+ Full screen";
         }
         break;
+      case Qt::Key_F2:
+                      mouseTracked = !mouseTracked;
+                      this->setMouseTracking(mouseTracked);
+                      renderWidget->setMouseTracking(mouseTracked);
+                      if(!mouseTracked)
+                          QApplication::setOverrideCursor( QCursor());
+                      else
+                          QApplication::setOverrideCursor( QCursor( Qt::BlankCursor ));
+                  break;
 
     case Qt::Key_N:
     {
         if (!event->isAutoRepeat())
         {
-            vuePrincipal->g_model.loadAnim("Meshs/boarman/doom.md5anim");
-            vuePrincipal->g_model.getAnimation().setContinuous(true);
+            renderWidget->g_model.loadAnim("Meshs/boarman/doom.md5anim");
+            renderWidget->g_model.getAnimation().setContinuous(true);
         }
     }
     break;
@@ -328,8 +347,8 @@ void MainWindow::keyReleaseEvent ( QKeyEvent * event )
     case Qt::Key_N:
     {
         if (!event->isAutoRepeat()) {
-            vuePrincipal->g_model.clearAnimation();
-            vuePrincipal->g_model.setIsWalking(false);
+            renderWidget->g_model.clearAnimation();
+            renderWidget->g_model.setIsWalking(false);
         }
 
         break;

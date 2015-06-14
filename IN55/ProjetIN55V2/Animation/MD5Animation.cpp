@@ -336,6 +336,7 @@ void MD5Animation::interpolateSkeletons( FrameSkeleton& finalSkeleton, const Fra
 
 void MD5Animation::render()
 {
+
     glPointSize( 5.0f );
     glColor3f( 1.0f, 0.0f, 0.0f );
 
